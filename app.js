@@ -1,26 +1,83 @@
-// 
-var uiController = (function() {})();
-
-// 
-var financeController = (function() {})();
-
-// 
-var appController = (function(uiController, financeController) {
-var ctrlAddItem = function() {
-    
-    console.log("gg");
-
+// screen 
+var uiController = (function() {
+    var DOMstring = {
+        inputType:'.add__type',
+        inputDesc:'.add__description',
+        inputValue:'.add__value',
+        addBtn:".add__btn"
     };
 
-    document.querySelector(".add__btn").addEventListener("click", function() {
-    ctrlAddItem();
-});
-
-document.addEventListener("keypress", function(event) {
-    if (event.keyCode === 13 || event.which === 13) {
-    ctrlAddItem();
+    return{
+        getInput: function(){
+            return {
+                type:document.querySelector(DOMstring.inputType).value,
+                description:document.querySelector(DOMstring.inputType).value,
+                value:document.querySelector(DOMstring.inputValue).value
+            }
+        },
+        getDOMstring: function(){
+            return DOMstring;
+        }
     }
-    });
-})(uiController, financeController);
+})();
 
+// finance
+var financeController = (function() 
+{
+    var Tncome = function(id , description ,value)
+{
+    this.id = id ;
+    this.description = description;
+    this.value = value;
+}
+var Expense = function(id , description ,value)
+{
+    this.id = id ;
+    this.description = description;
+    this.value = value;
+}
+    var data = 
+    {
+        allitems:
+        {
+            inc: [],
+            exp: []
+        },
+        total:
+        {
+            inc: 0,
+            exp: 0 
+        }
+    }
+}
+)();
+
+// app
+var appController = (function(uiController, financeController) {
+    var DOM = uiController.getDOMstring();
+    var ctrlAddItem = function() {
+    // 1
+
+    
+
+    };
+    var setupListener = function()
+    {   DOM = uiController.getDOMstring();
+        document.querySelector(DOM.addBtn).addEventListener("click", function() {
+            ctrlAddItem();
+        });
+        
+        document.addEventListener("keypress", function(event) {
+            if (event.keyCode === 13 || event.which === 13) {
+            ctrlAddItem();
+            }
+            });
+    }
+    return {
+        Init:function()
+        {
+            setupListener();
+        }
+    }
+})(uiController, financeController);
 
