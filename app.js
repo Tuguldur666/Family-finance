@@ -3,7 +3,13 @@ var uiController = (function() {
     inputType: ".add__type",
     inputDescription: ".add__description",
     inputValue: ".add__value",
-    addBtn: ".add__btn"
+    addBtn: ".add__btn",
+    incomeList: '.income__list',
+    expenseList: '.expenses__list',
+    budgetLabel: '.budget__value',
+    incomeLabel: '.budget__income--value',
+    expLabel: '.budget__expenses--value ',
+    percLabel: '.budget__expenses--percentage'
     };
 
     return {
@@ -15,19 +21,38 @@ var uiController = (function() {
         };
         },
         
-        getDOMstrings: function() {
+        getDOMstrings: function() 
+        {
         return DOMstrings;
         },
+        clearFIeld: function()
+        {
+            var fields = document.querySelectorAll(DOMstrings.inputDescription + " , " + DOMstrings.inputValue );
+            var fieldsArr = Array.prototype.slice.call(fields);
+            for(var i = 0 ; i < fieldsArr.length ; i++)
+            {
+                fieldsArr[i].value = ''
+                fieldsArr[0].focus();
+            }
+        },
+            showBudget: function(budget)
+            {
+            document.querySelector( DOMstrings.budgetLabel).textContent = budget.budget ;
+            document.querySelector( DOMstrings.incomeLabel).textContent = budget.totalInc;
+            document.querySelector( DOMstrings.expLabel).textContent = budget.totalExp;
+            document.querySelector( DOMstrings.percLabel).textContent = budget.perc;
+
+            },
 
         addListItem: function(item, type) {
             
         var html, list;
         if (type === "inc") {
-        list = ".income__list";
+        list = DOMstrings.incomeList;
         html =
             '<div class="item clearfix" id="income-%id%"><div class="item__description">$desc$</div><div class="right clearfix"><div class="item__value"> + $value$</div><div class="item__delete">            <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div>        </div></div>';
         } else {
-        list = ".expenses__list";
+        list = DOMstrings.expenseList;
         html =
             '<div class="item clearfix" id="expense-%id%"><div class="item__description">$desc$</div>          <div class="right clearfix"><div class="item__value"> - $value$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn">                <i class="ion-ios-close-outline"></i></button></div></div></div>';
         }
@@ -57,6 +82,14 @@ var uiController = (function() {
         this.description = description;
         this.value = value;
     };
+    var calculateTotal = function(type)
+    {   var sum = 0;
+        data.items[type].forEach(function(el)
+        {
+            sum = sum + el.value ;
+        });
+        data.totals[type] = sum ;
+    };
 
     // private data
     var data = {
@@ -68,10 +101,28 @@ var uiController = (function() {
         totals: {
         inc: 0,
         exp: 0
-        }
+        },
+        budget: 0,
+        perc: 0
     };
     
     return {
+        calculateBudget: function()
+        {
+            calculateTotal('inc');
+            calculateTotal('exp');
+            data.budget = data.totals.inc - data.totals.exp ;
+            data.perc = Math.round((data.totals.exp / data.totals.inc)* 100) ;
+        },
+        getBudget: function()
+        {
+            return{
+                budget: data.budget,
+                perc: data.perc,
+                totalInc: data.totals.inc,
+                totalExp: data.totals.exp
+            }
+        },
         addItem: function(type, desc, val) {
         var item, id;
             
@@ -103,15 +154,20 @@ var uiController = (function() {
 
         var input = uiController.getInput();
         
-        
-        var item = financeController.addItem(
-        input.type,
-        input.description,
-        input.value
-        );
-        
+        if(input.description !== "" && input.value !== "")
+        {
+            var item = financeController.addItem(
+                input.type,
+                input.description,
+                input.value
+                );
+        }
             
         uiController.addListItem(item, input.type);
+        uiController.clearFIeld();
+        financeController.calculateBudget();
+        var budget = financeController.getBudget();
+        uiController.showBudget(budget);
         
     };
     
