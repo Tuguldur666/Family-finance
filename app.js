@@ -24,7 +24,7 @@ var uiController = (function() {
 // finance
 var financeController = (function() 
 {
-    var Tncome = function(id , description ,value)
+    var Income = function(id , description ,value)
 {
     this.id = id ;
     this.description = description;
@@ -38,7 +38,7 @@ var Expense = function(id , description ,value)
 }
     var data = 
     {
-        allitems:
+        items:
         {
             inc: [],
             exp: []
@@ -48,16 +48,39 @@ var Expense = function(id , description ,value)
             inc: 0,
             exp: 0 
         }
+    };
+    return{
+        addItem: function(type , desc , value)
+        {   
+            var item , id ;
+            if(data.items[type].length === 0)
+            {
+                id = 1 ;
+            }else
+            {
+               id = data.items[type][ data.items[type].length - 1].id + 1 ;
+            }
+
+            if(type === "inc")
+            {
+                item = new Income(id , desc ,value);
+            }else
+            {
+                item = new Expense(id , desc ,value);
+            }
+            data.items[type].push(item);     
+        }
     }
-}
-)();
+
+})();
 
 // app
 var appController = (function(uiController, financeController) {
     var DOM = uiController.getDOMstring();
     var ctrlAddItem = function() {
-    // 1
-
+    // 1 
+    var input = uiController.getInput();
+        financeController.addItem(input.description , input.type , input.value);
     
 
     };
@@ -80,4 +103,5 @@ var appController = (function(uiController, financeController) {
         }
     }
 })(uiController, financeController);
+appController.Init();
 
